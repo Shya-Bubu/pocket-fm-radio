@@ -1,0 +1,279 @@
+Skip to content
+0141-4946677
+
+support@quartzcomponents.com
+
+Free Shipping Over INR 500
+
+Careers
+FAQs
+Contact Us
+QuartzComponents
+Search 5000+ components, modules, boards & tools…
+Search
+Cart
+Wishlist
+Login/Signup
+ CATEGORIES
+Track Your Order
+ 
+B2B Sales
+ 
+ATL/STEM Kits
+ 
+Customised Services 
+Join as Vendor
+Chat with Us
+Electronics Projects
+Categories
+Recent Post
+Interfacing SHT30 Digital Temperature and Humidity Sensor Module with Arduino
+19 March 2025
+
+How to Interface TEMT6000 Ambient Light Sensor with Arduino
+08 March 2025
+
+Interfacing KY-031 Knock Sensor with Arduino
+03 March 2025
+
+Featured Products
+TEA5767 FM Radio Module Interfacing with Arduino
+by Aniket Sharma 25 Oct 2023 0 Comments
+The TEA5767 Module is a single-chip FM Radio IC circuit designed for low-voltage applications, making it ideal for use in embedded systems and microcontroller platforms like Arduino and other 3.3V development boards. This versatile chip includes intermediate frequency selectivity and an integrated FM demodulator. Its ease of interfacing compatibility with the I2C communication protocol makes it straightforward to connect to other development boards. With minimal additional components, it can function as a stand-alone radio receiver. The TEA5767 supports a frequency range of 88MHz to 108MHz, allowing it to tune into FM stations in India, Japan, Europe, and the United States.
+
+
+
+Specifications:
+
+Operating voltage: 3.3V
+Interface: I2C using SDA & SCL pins
+High sensitivity with a low-noise input amplifier.
+RF AGC (Automatic Gain Control) for signal optimization.
+Standby Mode and Soft Mute for power-saving and audio control.
+Stereo decoding without manual adjustments.
+Precise tuning using a Phase Locked Loop synthesizer.
+Integrated FM IF selectivity and LC Tuner Oscillator with low-cost chip inductors.
+Complete FM demodulator for seamless signal processing.
+Crystal reference frequency oscillator for accuracy.
+I2C interface for easy integration.
+Supports a frequency range of 76MHz to 108MHz, covering various FM stations.
+Pinout & Parts Description of TEA5767 FM radio Module
+
+There are a total of 10 pins on this module
+
+TEA5767 FM Radio Module  Pinout
+SCL (Serial Clock): This is the clock pin for I2C communication. Connect it to the SCL pin on your Arduino or microcontroller.
+SDA (Serial Data): This is the data pin for I2C communication. Connect it to the SDA pin on your Arduino or microcontroller.
+BUS or MODE: This pin selects the communication mode (I2C or Serial). Connect it to ground (GND) for I2C mode, or leave it unconnected for Serial mode.
+W/R (Write/Read): This pin determines whether you are writing data to the module or reading data from it. Connect it to ground (GND) for write mode or leave it unconnected for read mode.
+VCC (Voltage Supply): Connect this pin to the power supply voltage (typically 3.3V or 5V, depending on the module's specifications).
+ANT (Antenna): Connect an external FM antenna to this pin for better reception. If you don't have an FM antenna, you can use a simple wire as an antenna.
+MPXO (Multiplex Output): This pin provides the demodulated audio output signal. Connect it to an audio amplifier or speaker for audio output.
+Left & Right Out (L & R Out): This pin provides the audio signal for the left as well as Right audio channel when the TEA5767 module is operating in stereo mode. Connect it to the input of an audio amplifier or speaker circuit for the left channel.
+GND (Ground): Connect this pin to the ground (GND) of your power supply or microcontroller.
+Interfacing TEA5767 FM module with Arduino
+
+The Module communicates via I2C communication with Arduino using SDA & and SCL pins. We are integrating a 16*2 LCD for monitoring the current frequency of the channel while changing the channel using push buttons. We use the LM386 audio amplifier module for output sound amplification.
+
+Components Required:
+
+TEA5767 FM Radio Module
+Arduino Nano
+16x2 (1602) LCD Display
+I2C Serial Interface LCD Adapter Module
+LM386 Audio Amplifier Module
+1W Speaker - 8 Ohm
+Push Button*2
+10K ohm Resistor
+Jumper wires
+Arduino Nano TEA5767 Module Circuit Connections:
+
+TEA5767 FM radio module circuit diagram
+The TEA5767 module has to be soldered on a PCB to fit on the breadboard.
+
+Vcc and Gnd of the sensor connect to the 3.3v and Ground of the Arduino. Also, the BUS pin should be grounded.
+The SDA and SCL of the sensor are connected to the A4 & and A5 pins on the Nano board which is used to communicate with Arduino.
+The Left and Right Out are connected to amplifier input terminals. If you are using Stereo then use Both otherwise the single channel is also okay.
+ANT pin connects to any simple radio antenna, or else a simple wire also works.
+16x2 LCD connection:
+
+We are using an I2C serial adaptor for interfacing the LCD through I2C communication.
+
+The VCC and GND should be connected to the 5v power pin and Ground of the Arduino.
+The SDA & SCL pins of LCD connected to the A4 and A5 pins on Nano.
+Push Button Connections:
+
+We are here using two push buttons:
+
+One end of each push button is connected to the 5v in series with a 10k ohm resistor whereas the other end is directly to the ground.
+Now, the data pin D5 & D6 have connections directly to the +ve end of the switch after the resister.
+Amplifier Board connection:
+
+We are using the single channel i.e., mono audio. Hence, the module LM386 is the perfect choice.
+
+Power the LM386 board using 5v and GND of the Arduino while connecting the input pin to any out-channel of the TEA5767 module.
+Connect any 4ohm,8ohm or 16ohm speaker to the output of the LM386 Board.
+TEA5767 FM Radio Module interfacing with Arduino
+ 
+
+Arduino TEA5767 FM Module Code 
+
+Due to the two devices connected to the Arduino, we need to specify the I2C Address of the devices. We are using the Inbuilt TEA5767 library which has an Inbuilt I2C Address as well as various functions to operate the module.
+
+Additionally, we set up our push buttons as INPUT_PULLUP for better functioning. If conditions we have used to Increase or decrease the frequency by 0.1 when the buttons are pressed.
+
+ 
+
+#include <LiquidCrystal_I2C.h>
+
+#include <TEA5767Radio.h>
+
+ LiquidCrystal_I2C lcd(0x27, 20, 4);
+
+TEA5767Radio radio;
+
+ // Define button pins
+
+const int Button_next = 5;
+
+const int Button_prev = 6;
+
+ double currentFrequency = 91.1; // Initial frequency in MHz
+
+ void setup()
+
+{ lcd.init();
+
+  lcd.backlight();
+
+  lcd.setCursor(0, 0);
+
+  lcd.print("FM Receiver");
+
+  lcd.setCursor(0, 1);
+
+  lcd.print("Frequency: ");
+
+ radio.setFrequency(currentFrequency); // Set the initial frequency to 87.5 MHz       (frequency in 100 kHz units)
+
+   pinMode(Button_next, INPUT_PULLUP);
+
+  pinMode(Button_prev, INPUT_PULLUP);
+
+}
+
+ void loop()
+
+{ lcd.setCursor(11, 1);
+
+  lcd.print(currentFrequency, 1); // Display the current frequency on the LCD in MHz
+
+  // Check for button presses and control the radio
+
+  if (!digitalRead(Button_next))
+
+  { currentFrequency += 0.1;
+
+    radio.setFrequency(currentFrequency);
+
+    delay(100);
+
+  }
+
+  if (!digitalRead(Button_prev))
+
+  { currentFrequency -= 0.1;
+
+    radio.setFrequency(currentFrequency);
+
+    delay(100);
+
+  }
+
+}
+
+ Demonstration of Arduino TEA5767 FM Radio Module Working
+
+Check All the connections carefully and make sure no wire getting loose.
+Upload the Code after changes inside the code according to the changes made in your hardware.
+Place the Antenna properly and don’t forget to increase the volume if you do not hear any noisy sound.
+Select the correct frequency used in your Area to broadcast the FM. Now, you can enjoy your DIY FM Receiver.
+TEA5767 FM Radio Module interfacing with Arduino
+ 
+
+I hope you liked and enjoyed the project and learned something valuable from it. If you have any questions, you can leave them in the comment section below.
+
+930 x 520px
+SPRING SUMMER LOOKBOOK
+WOMEN
+MEN
+Sample Block Quote
+Praesent vestibulum congue tellus at fringilla. Curabitur vitae semper sem, eu convallis est. Cras felis nunc commodo eu convallis vitae interdum non nisl. Maecenas ac est sit amet augue pharetra convallis.
+Sample Paragraph Text
+Praesent vestibulum congue tellus at fringilla. Curabitur vitae semper sem, eu convallis est. Cras felis nunc commodo eu convallis vitae interdum non nisl. Maecenas ac est sit amet augue pharetra convallis nec danos dui. Cras suscipit quam et turpis eleifend vitae malesuada magna congue. Damus id ullamcorper neque. Sed vitae mi a mi pretium aliquet ac sed elitos. Pellentesque nulla eros accumsan quis justo at tincidunt lobortis deli denimes, suspendisse vestibulum lectus in lectus volutpate.
+ Tags:
+Arduinoarduino nanoArduino ProjectsElectronic CircuitsMicrocontrollermodules
+Prev Post
+Next Post
+Leave a comment
+Name
+Email
+Comment
+                                          
+                                      
+Please note, comments need to be approved before they are published.
+
+Shop
+Development Boards
+Sensor Modules
+Semiconductors & Prototyping Components
+Batteries, Power Supplies & Accessories
+Wireless & IoT Products
+Switches, Relays & Protection
+Lighting & LEDs
+Motors, Drivers & Pumps
+Wires, Cables & Connectors
+Robotics & DIY Learning Kits
+3D Printers & Parts
+SMD Components
+Electronic Modules
+Drone Components
+Hardware Instruments & Tools
+Displays
+Shop By Brand
+Information
+Frequently Asked Questions
+Affiliate Program
+Privacy Policy
+Refund Policy
+Shipping Policy
+Terms of service
+About Us
+Contact
+Feedback
+Reviews
+Offers
+Payment
+Customized Services
+Custom Battery Design
+Custom Battery Charger Design
+Custom SMPS Transformer Design
+Custom PCB Design
+Contact Us
+Quartz Components, Plot No. 39, 200 Feet SEZ Road, Near Malot Hospital, Mahapura, Jaipur - 302026
+0141-4946677
+support@quartzcomponents.com
+Connect to Our Socials
+Facebook
+Instagram
+Pinterest
+YouTube
+Twitter
+© 2025 Quartz Components. All Rights Reserved.
+
+Payment methods
+Menu
+Close
+ Sign In
+ Create an Account
+My Wish List

@@ -1,0 +1,191 @@
+% ═══════════════════════════════════════════════════════════════════════════
+%  Part 6 - Expert Review & Audit
+% ═══════════════════════════════════════════════════════════════════════════
+
+\section{Expert Review \& Audit}
+
+The Phase~3 design guide was submitted to five AI models for independent expert
+review: Claude Sonnet~4.6, GPT-5.4, Gemini~3.1 Pro, Grok Fast~1, and a
+Codex-based audit tool.  The reviews identified 7~critical issues (would prevent
+the radio from working), 10+ warnings (would cause problems), and numerous
+suggestions for improvement.
+
+% ─── Critical Issues ─────────────────────────────────────────────────────
+\subsection{Critical Issues}
+
+The following issues would \textbf{prevent the radio from functioning} if built
+exactly as described in the original guide.
+
+\begin{enumerate}[leftmargin=2em, itemsep=8pt]
+
+  \item \textbf{\chip{TP4056} LED Wiring Backwards}
+
+  \pin{CHRG} (pin~7) and \pin{STDBY} (pin~6) are open-drain outputs that sink
+  current to GND when active.  The guide shows them \emph{sourcing} current
+  (pin $\to$ R $\to$ LED $\to$ GND).  Neither LED will ever illuminate.
+
+  \textit{Correct wiring:}
+  VBUS $\to$ R12 $\to$ LED anode $\to$ LED cathode $\to$ \chip{TP4056} pin.
+
+  \textit{Found by:} ALL 5 reviewers.
+
+  \item \textbf{\chip{CH340C} V3 Pin Missing}
+
+  Pin~4 (\pin{V3}) must be tied to VCC with a 100\,nF bypass capacitor for
+  3.3\,V operation.  Without this connection, the internal USB transceiver
+  fails to enumerate - no COM port appears on the host PC.
+
+  \textit{Found by:} Sonnet, Grok, Gemini.
+
+  \item \textbf{Power Switch Must Be ON for USB}
+
+  The \chip{CH340C} is powered from the \signal{+3V3} rail behind SW1.  If the
+  power switch is OFF, the USB-UART bridge has no supply and the USB-C port
+  appears completely dead.  This requirement was not documented anywhere in the
+  original guide.
+
+  \textit{Found by:} Sonnet, Grok, Gemini.
+
+  \item \textbf{\chip{PAM8403} Pin Mapping Wrong}
+
+  The guide states \pin{INL}~=~pin~8, but the \chip{PAM8403} datasheet
+  specifies \pin{INL}~=~pin~7.  Multiple other pin assignments are also
+  incorrect (\pin{INR}, \pin{SHDN}, \pin{PVCC}, output pairs).  If the
+  schematic follows the guide text, the amplifier is wired to the wrong pins.
+
+  \textit{Found by:} Codex Audit.
+
+  \item \textbf{\chip{TP4056} BAT Pin Number Wrong}
+
+  The guide references BAT~=~pin~3, but pin~3 is GND on the \chip{TP4056}.
+  The actual BAT output is pin~5.  Copying this directly into a schematic
+  produces an electrically incorrect charger section.
+
+  \textit{Found by:} Codex Audit.
+
+  \item \textbf{\chip{DW01A}/\chip{FS8205A} Protection Circuit Errors}
+
+  The guide shows a high-side topology (BAT+ path), but the \chip{FS8205A}
+  N-channel FETs require low-side placement (BAT- path).  Additionally,
+  R14~=~100\,$\Omega$ is placed in the main battery return path, creating an
+  excessive voltage drop ($I \times 100\,\Omega$) that breaks normal operation.
+
+  \textit{Found by:} Codex, GPT, Gemini.
+
+  \item \textbf{No Real Schematic in Repository}
+
+  Both \texttt{.kicad\_sch} files in the repository are empty (14~lines each,
+  no components placed).  Without an actual schematic, the design cannot be
+  validated against datasheets, and no netlist or PCB can be generated.
+
+  \textit{Found by:} Codex Audit.
+
+\end{enumerate}
+
+% ─── Warnings ─────────────────────────────────────────────────────────────
+\subsection{Warnings}
+
+These issues would cause degraded performance, builder confusion, or
+intermittent failures.
+
+\rowcolors{2}{zebrarow}{white}
+\begin{longtable}{
+  >{\small}c
+  >{\raggedright\arraybackslash\small}p{4.5cm}
+  >{\raggedright\arraybackslash\small}p{4.5cm}
+  >{\raggedright\arraybackslash\small}p{3.2cm}
+}
+\caption{Warnings identified during expert review.}
+\label{tab:audit-warnings} \\
+
+\rowcolor{tablehead}
+\hdr{\#} & \hdr{Issue} & \hdr{Impact} & \hdr{Reviewers} \\
+\midrule
+\endfirsthead
+
+\rowcolor{tablehead}
+\hdr{\#} & \hdr{Issue} & \hdr{Impact} & \hdr{Reviewers} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{4}{r}{\small\itshape Continued on next page\ldots} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+1 & Audio path contradiction (mono block diagram vs stereo checklist)
+  & Builder gets different circuits from different sections
+  & Sonnet, Grok, GPT \\
+
+2 & Battery ADC source impedance 50\,k$\Omega$ (exceeds ATmega 10\,k$\Omega$ limit)
+  & Inaccurate battery readings
+  & Sonnet, Grok, Gemini \\
+
+3 & Encoder ISR read/clear not atomic
+  & Lost encoder pulses
+  & Sonnet, Grok \\
+
+4 & \chip{PAM8403} second PVCC pin not bypassed
+  & Audible distortion
+  & Sonnet, Grok \\
+
+5 & SOIC-16 vs SOP-16 footprint conflict
+  & Chip body overhang on PCB
+  & Sonnet, Grok, GPT \\
+
+6 & ``Use while charging'' claim unsupported
+  & \chip{TP4056} is not a power-path controller
+  & GPT \\
+
+7 & \chip{DW01A} wiring not spelled out clearly
+  & 5/5 reviewers flagged this sub-circuit
+  & ALL \\
+
+8 & \chip{RDA5807M} \texttt{0x11} address fallback dropped
+  & $\sim$40\% of modules won't respond
+  & GPT \\
+
+9 & RDS station names claimed but not implemented
+  & Spec mismatch (uses hardcoded table)
+  & GPT \\
+
+10 & Headphone detect logic may be inverted
+   & PJ-320A uses NC switches internally
+   & Gemini \\
+
+\end{longtable}
+\rowcolors{1}{}{}% reset zebra
+
+% ─── Reviewer Agreement Analysis ─────────────────────────────────────────
+\subsection{Reviewer Agreement Analysis}
+
+\begin{calloutnote}[Consensus Findings]
+Issues flagged by 3+ reviewers independently carry the highest confidence.  The
+\chip{TP4056} LED wiring (5/5), \chip{DW01A} confusion (5/5), and \chip{CH340C}
+V3 pin (3/5) represent the most certain errors.  Single-reviewer findings (like
+\chip{PAM8403} pin mapping from Codex) still require verification against the
+actual datasheet.
+\end{calloutnote}
+
+% ─── Fixes Applied ───────────────────────────────────────────────────────
+\subsection{Fixes Applied}
+
+Several critical issues were addressed in later revisions of the \texttt{.tex}
+guide: C18 (100\,nF) added for \chip{CH340C} \pin{V3} pin, C19 (100\,nF) added
+for ADC filter, C20 (10\,$\mu$F) added for \chip{PAM8403} second PVCC, and R9
+changed to 2.2\,k$\Omega$ for proper charge current ($\sim$455\,mA).  However,
+the fundamental issues - empty schematic files, \chip{PAM8403} pin mapping, and
+\chip{DW01A} topology - remain unresolved as of the final revision.
+
+% ─── Fabrication Readiness ────────────────────────────────────────────────
+\subsection{Fabrication Readiness}
+
+\begin{calloutfail}[Not Ready for Fabrication]
+The validation checklist shows 8 of 12 domains with unresolved issues.  The
+most critical blocker is the absence of a real, validated schematic - both
+KiCad \texttt{.kicad\_sch} files in the repository are empty.  Until a complete
+schematic is drawn, verified against datasheets, and passes ERC/DRC, the design
+cannot be sent for PCB fabrication.
+\end{calloutfail}

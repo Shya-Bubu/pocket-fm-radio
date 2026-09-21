@@ -1,0 +1,122 @@
+% ══════════════════════════════════════════════════════════════════════════
+%  PART 1 - Title Page, Abstract, Contents
+% ══════════════════════════════════════════════════════════════════════════
+
+% ─── Cover ────────────────────────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+  % Full-bleed teal band at top
+  \fill[brandteal] (current page.north west) rectangle
+        ([yshift=-4.2cm]current page.north east);
+  % Copper accent stripe
+  \fill[brandcopper] ([yshift=-4.2cm]current page.north west) rectangle
+        ([yshift=-4.35cm]current page.north east);
+  % Geometric radio-wave pattern (concentric arcs, in top band)
+  \begin{scope}
+    \clip ([yshift=-0.1cm]current page.north west) rectangle
+          ([yshift=-4.2cm]current page.north east);
+    % Radio-wave concentric arcs emanating from left
+    \foreach \r in {1.0,1.6,2.2,2.8,3.4,4.0,4.6,5.2} {
+      \draw[white, opacity=0.10, line width=0.5pt]
+        ([xshift=3.0cm, yshift=-2.1cm]current page.north west)
+        arc[start angle=-40, end angle=40, radius=\r cm];
+    }
+    % Second set of arcs from right side
+    \foreach \r in {1.0,1.6,2.2,2.8,3.4,4.0,4.6,5.2} {
+      \draw[white, opacity=0.07, line width=0.4pt]
+        ([xshift=-4.0cm, yshift=-2.1cm]current page.north east)
+        arc[start angle=140, end angle=220, radius=\r cm];
+    }
+    % Subtle copper dots representing signal nodes
+    \foreach \i in {0,1,...,12} {
+      \fill[brandcopper, opacity=0.18]
+        ([xshift=\i*1.7cm+1.0cm, yshift=-3.4cm]current page.north west)
+        circle (2pt);
+    }
+  \end{scope}
+
+  % University, top-left
+  \node[anchor=north west, inner sep=0pt, text=white,
+        font=\headingfont\Large\bfseries]
+    at ([xshift=2.2cm, yshift=-1.2cm]current page.north west)
+    {UNIVERSITY OF PERADENIYA};
+  \node[anchor=north west, inner sep=0pt, text=white, opacity=0.85,
+        font=\headingfont\normalsize]
+    at ([xshift=2.2cm, yshift=-1.85cm]current page.north west)
+    {Faculty of Engineering};
+  \node[anchor=north west, inner sep=0pt, text=white, opacity=0.85,
+        font=\headingfont\normalsize]
+    at ([xshift=2.2cm, yshift=-2.25cm]current page.north west)
+    {Department of Electrical \& Electronic Engineering};
+
+  % Project title block, centred on page
+  \node[anchor=center, text width=19cm, align=center] at
+    ([yshift=1.8cm]current page.center) {%
+    \headingfont\color{inkdark}
+    {\fontsize{30}{36}\selectfont\bfseries Design \& Implementation of}\\[6pt]
+    {\fontsize{30}{36}\selectfont\bfseries an FM Pocket Radio}\\[16pt]
+    {\fontsize{15}{19}\selectfont\bfseries\color{brandcopper}%
+      From Breadboard to Custom PCB}};
+
+  % Module tag as a clean typographic element: copper rule / text / copper rule
+  \node[anchor=center, font=\headingfont\small\bfseries, text=brandteal,
+        inner sep=0pt]
+    (modtag) at ([yshift=-0.7cm]current page.center)
+    {EE2050 \hspace{0.6em}\textbullet\hspace{0.6em}
+     PRODUCT DEVELOPMENT};
+  \draw[brandcopper, line width=1.2pt]
+    ([xshift=-8.5cm]modtag.center) -- ([xshift=-0.4cm]modtag.west);
+  \draw[brandcopper, line width=1.2pt]
+    ([xshift=0.4cm]modtag.east) -- ([xshift=8.5cm]modtag.center);
+
+  % Author block with placeholder names
+  \node[anchor=center, draw=rulegray, line width=0.4pt, rounded corners=6pt,
+        fill=white, inner xsep=20pt, inner ysep=14pt]
+    (authcard) at ([yshift=-5.0cm]current page.center) {%
+    \begin{tabular}{@{}c@{}}
+      \headingfont\bfseries\color{brandteal}\small Members \\[2pt]
+      \color{rulegray}\rule{6cm}{0.3pt} \\[4pt]
+      \ttfamily\small D.A.S.R. Dharmarathna  \\
+      \ttfamily\small S.M.T.Uthpala  \\
+    \end{tabular}};
+
+  % Bottom teal rule
+  \draw[brandteal, line width=2.5pt]
+    ([xshift=2.2cm, yshift=0.9cm]current page.south west)
+    -- ([xshift=-2.2cm, yshift=0.9cm]current page.south east);
+\end{tikzpicture}
+\end{titlepage}
+
+% ─── Abstract ─────────────────────────────────────────────────────────────
+\newpage
+\thispagestyle{fancy}
+\section*{\headingfont\color{brandteal}Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+This report documents the design, iteration, and implementation of a portable
+FM pocket radio, developed across three progressive iterations for the
+\textbf{EE2050 Product Development} module during Semester~3 (February to
+March 2026). The project evolved through three iterations:
+
+\begin{itemize}[leftmargin=1.8em, itemsep=2pt]
+  \item \textbf{Iteration 1:} A basic Arduino UNO + RDA5807M + TDA2822M perfboard prototype.
+  \item \textbf{Iteration 2:} An ESP32-based feature-rich build with OLED display and rotary encoders.
+  \item \textbf{Iteration 3:} A custom PCB design featuring an ATmega328P, PAM8403 Class-D amplifier, CH340C USB-UART bridge, and single USB-C port for both charging and programming.
+\end{itemize}
+
+The design process was heavily AI-assisted, with multiple
+language models consulted for circuit design, debugging, and verification.
+This report captures the complete engineering journey: the problems
+encountered, the solutions discovered, and the lessons learned.
+
+% ─── Table of Contents ────────────────────────────────────────────────────
+\newpage
+\thispagestyle{fancy}
+{\headingfont\color{brandteal}
+  \renewcommand{\contentsname}{Contents}
+  \tableofcontents}
+\vspace{0.5cm}
+\noindent\color{rulegray}\rule{\linewidth}{0.3pt}
+
+\newpage
