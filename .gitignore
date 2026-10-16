@@ -6,7 +6,7 @@
 *-backups/
 fp-info-cache/
 
-# LaTeX
+# LaTeX & Old Reports
 *.aux
 *.bbl
 *.blg
@@ -25,6 +25,20 @@ fp-info-cache/
 *.fdb_latexmk
 report\_backup_v1/
 report/
+report_radio/
+
+# Root-level Drafts & Scratch Files
+/FM radio (1).pdf
+/FM_Pocket_Radio_Phase3_*
+/FM_Radio_*
+/RADIO.png
+/radio2_top.png
+/radio2_drc.json
+/esp32_datasheet_en.pdf
+/tda2822m.pdf
+/tea5767.txt
+/master.md
+/*ESP32 FM Radio V2.pdf
 
 # IDE / VS Code / Cursor / AI chats
 chats/
