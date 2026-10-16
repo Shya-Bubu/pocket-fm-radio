@@ -1,6 +1,6 @@
 # FM Pocket Radio
 
-This repository contains the complete design and documentation for an FM Pocket Radio project, developed as part of the **EE2050 Product Development** module at the University of Peradeniya (Semester 3).
+This repository contains the complete design and documentation for an FM Pocket Radio project, developed as part of the **EE2050 Design Principles and Manufacturing Technologies** module at the University of Peradeniya (Semester 3).
 
 The project demonstrates an iterative engineering approach, evolving from an initial proof-of-concept perfboard build to an ESP32-powered dot-board prototype with an OLED UI, and finally into a custom mixed-signal 2-layer PCB design.
 
