@@ -54,3 +54,4 @@ feedback_*.md
 .Trashes
 ehthumbs.db
 Thumbs.db
+*_raw.png

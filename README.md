@@ -19,13 +19,21 @@ The project demonstrates an iterative engineering approach, evolving from an ini
 ## Prototypes & PCB Design
 
 ### Iteration 2: Working Hardware Prototype
+
 Fully working dot-board prototype with OLED station readout, rotary volume and tuning control, and integrated battery management.
-![Working Prototype](images/v2_working_1.png)
+
+<p align="center">
+  <img src="images/v2_working_1.png" alt="Working Prototype" width="520" />
+</p>
 
 ### Iteration 3: KiCad PCB Design (2D Layout & 3D Render)
-Custom 2-layer 70 x 50 mm PCB with dedicated analog, digital, and power zone isolation.
-![2D PCB Layout](images/radio2_top.png)
-![3D PCB Render](images/RADIO.png)
 
----
-*Authored by Shya-Bubu*
+Custom 2-layer 70 x 50 mm PCB with dedicated analog, digital, and power zone isolation.
+
+<p align="center">
+  <img src="images/radio2_top.png" alt="2D PCB Layout" width="600" />
+</p>
+
+<p align="center">
+  <img src="images/RADIO.png" alt="3D PCB Render" width="600" />
+</p>
